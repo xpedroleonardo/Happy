@@ -4,6 +4,7 @@ import { AppLoading } from 'expo';
 import { Nunito_600SemiBold, Nunito_700Bold, Nunito_800ExtraBold } from '@expo-google-fonts/nunito';
 
 import Routes from './src/routes';
+import { StatusBar } from 'react-native';
 
 export default function App() {
 

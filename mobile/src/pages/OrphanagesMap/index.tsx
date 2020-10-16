@@ -3,7 +3,6 @@ import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 
-
 import { Container, Map, CalloutContainer, CalloutText, Footer, FooterText, CreateOrphanage } from './styles';
 
 
@@ -15,6 +14,10 @@ const OrphanagesMap: React.FC = () => {
 
   function goToOrphanageDetails() {
     navigate('OrphanageDetails')
+  }
+
+  function goToCreateOrphanage() {
+    navigate('SelectMapPosition')
   }
 
 
@@ -52,7 +55,7 @@ const OrphanagesMap: React.FC = () => {
       <Footer>
         <FooterText>X orfanatos encontrados</FooterText>
 
-        <CreateOrphanage onPress={() => { }}>
+        <CreateOrphanage onPress={goToCreateOrphanage}>
           <Feather name="plus" size={20} color="#FFF" />
         </CreateOrphanage>
       </Footer>
