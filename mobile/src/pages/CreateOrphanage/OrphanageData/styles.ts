@@ -45,6 +45,19 @@ export const TextArea = styled.TextInput`
   height: 110px;
 `;
 
+export const UploadedImagesContainer = styled.View`
+  flex-direction: row;
+`;
+
+export const UploadedImage = styled.Image`
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  margin-bottom: 32px;
+  margin-right: 8px;
+`;
+
+
 export const ImagesInput = styled.TouchableOpacity`
   background-color: rgba(255, 255, 255, 0.5);
   border: 1.4px dashed #96D2F0;

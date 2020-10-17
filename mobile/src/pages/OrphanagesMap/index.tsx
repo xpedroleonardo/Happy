@@ -1,19 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import MapView, { Marker, Callout, PROVIDER_GOOGLE } from 'react-native-maps';
 
 import { Container, Map, CalloutContainer, CalloutText, Footer, FooterText, CreateOrphanage } from './styles';
 
 
 import mapMarker from '../../images/map-marker.png'
+import api from '../../services/api';
+
+interface Orphanage {
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+}
 
 const OrphanagesMap: React.FC = () => {
-
+  const [orphanages, setOrphanages] = useState<Orphanage[]>([])
   const { navigate } = useNavigation()
 
-  function goToOrphanageDetails() {
-    navigate('OrphanageDetails')
+
+  useFocusEffect(() => {
+    api.get('/orphanages').then(({ data }) => {
+      setOrphanages(data)
+    })
+  })
+
+  function goToOrphanageDetails(id: number) {
+    navigate('OrphanageDetails', { id })
   }
 
   function goToCreateOrphanage() {
@@ -33,27 +48,32 @@ const OrphanagesMap: React.FC = () => {
           longitudeDelta: 0.030
         }}
       >
-        <Marker
-          icon={mapMarker}
-          calloutAnchor={{
-            x: 2.7,
-            y: 0.8
-          }}
-          coordinate={{
-            latitude: -23.4747317,
-            longitude: -46.335891,
-          }}
-        >
-          <Callout tooltip onPress={goToOrphanageDetails} >
-            <CalloutContainer>
-              <CalloutText>Raio de Sol</CalloutText>
-            </CalloutContainer>
-          </Callout>
-        </Marker>
+
+        {orphanages.map(orphanage => (
+          <Marker
+            key={orphanage.id}
+            icon={mapMarker}
+            calloutAnchor={{
+              x: 2.7,
+              y: 0.8
+            }}
+            coordinate={{
+              latitude: orphanage.latitude,
+              longitude: orphanage.longitude,
+            }}
+          >
+            <Callout tooltip onPress={() => goToOrphanageDetails(orphanage.id)} >
+              <CalloutContainer>
+                <CalloutText>{orphanage.name}</CalloutText>
+              </CalloutContainer>
+            </Callout>
+          </Marker>
+        ))}
+
       </MapView>
 
       <Footer>
-        <FooterText>X orfanatos encontrados</FooterText>
+        <FooterText>{orphanages.length} orfanatos encontrados</FooterText>
 
         <CreateOrphanage onPress={goToCreateOrphanage}>
           <Feather name="plus" size={20} color="#FFF" />

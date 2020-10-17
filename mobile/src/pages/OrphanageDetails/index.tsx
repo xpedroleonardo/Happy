@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import { Feather, FontAwesome } from '@expo/vector-icons';
+import { useRoute } from '@react-navigation/native';
 
 import mapMarkerImg from '../../images/map-marker.png';
 
@@ -14,7 +15,7 @@ import {
   Description,
   MapConatiner,
   MapStyle,
-  RoutesContainer,
+  RoutesButton,
   RoutesText,
   Separator,
   ScheduleContainer,
@@ -22,30 +23,78 @@ import {
   ScheduleTextBlue,
   ScheduleItemGreen,
   ScheduleTextGreen,
+  ScheduleItemRed,
+  ScheduleTextRed,
   ContactButton,
-  ContactButtonText
+  ContactButtonText,
+  Loading,
+  LoadingText
 } from './styles';
+import api from '../../services/api';
+import { Linking } from 'react-native';
+
+interface RouteParams {
+  id: number;
+}
+
+interface Orphanage {
+  id: number;
+  name: string;
+  latitude: number;
+  longitude: number;
+  about: string;
+  instructions: string;
+  opening_hours: string;
+  open_on_weekends: boolean;
+  images: Array<{
+    id: number;
+    url: string;
+  }>
+}
 
 const OrphanageDetails: React.FC = () => {
+  const route = useRoute()
+  const [Orphanage, setOrphanage] = useState<Orphanage>()
+
+  const params = route.params as RouteParams
+
+  useEffect(() => {
+    api.get(`/orphanages/${params.id}`).then(({ data }) => setOrphanage(data))
+  }, [params.id])
+
+  if (!Orphanage) {
+    return (
+      <Loading>
+        <LoadingText>Carregando...</LoadingText>
+      </Loading>
+    )
+  }
+
+  function OpenGoogleMaps() {
+    Linking.openURL(`https://www.google.com/maps/dir/?api=1&destination=${Orphanage?.latitude},${Orphanage?.longitude}`)
+  }
+
   return (
     <Container>
       <ImagesContainer>
         <ImagesScroll horizontal pagingEnabled>
-          <Img source={{ uri: 'https://fmnova.com.br/images/noticias/safe_image.jpg' }} />
-          <Img source={{ uri: 'https://fmnova.com.br/images/noticias/safe_image.jpg' }} />
-          <Img source={{ uri: 'https://fmnova.com.br/images/noticias/safe_image.jpg' }} />
+
+          {Orphanage.images.map(image => (
+            <Img key={image.id} source={{ uri: image.url }} />
+          ))}
+
         </ImagesScroll>
       </ImagesContainer>
 
       <DetailsContainer>
-        <Title>Orf. Esperança</Title>
-        <Description>Presta assistência a crianças de 06 a 15 anos que se encontre em situação de risco e/ou vulnerabilidade social.</Description>
+        <Title>{Orphanage.name}</Title>
+        <Description>{Orphanage.about}</Description>
 
         <MapConatiner>
           <MapView
             initialRegion={{
-              latitude: -27.2092052,
-              longitude: -49.6401092,
+              latitude: Orphanage.latitude,
+              longitude: Orphanage.longitude,
               latitudeDelta: 0.008,
               longitudeDelta: 0.008,
             }}
@@ -58,37 +107,51 @@ const OrphanageDetails: React.FC = () => {
             <Marker
               icon={mapMarkerImg}
               coordinate={{
-                latitude: -27.2092052,
-                longitude: -49.6401092
+                latitude: Orphanage.latitude,
+                longitude: Orphanage.longitude
               }}
             />
           </MapView>
 
-          <RoutesContainer>
+          <RoutesButton onPress={OpenGoogleMaps}>
             <RoutesText>Ver rotas no Google Maps</RoutesText>
-          </RoutesContainer>
+          </RoutesButton>
         </MapConatiner>
 
         <Separator />
 
         <Title>Instruções para visita</Title>
-        <Description>Venha como se sentir a vontade e traga muito amor e paciência para dar.</Description>
+        <Description>{Orphanage.instructions}</Description>
 
         <ScheduleContainer >
           <ScheduleItemBlue>
             <Feather name="clock" size={40} color="#2AB5D1" />
-            <ScheduleTextBlue>Segunda à Sexta 8h às 18h</ScheduleTextBlue>
+            <ScheduleTextBlue>Segunda à Sexta {Orphanage.opening_hours}</ScheduleTextBlue>
           </ScheduleItemBlue>
-          <ScheduleItemGreen>
-            <Feather name="info" size={40} color="#39CC83" />
-            <ScheduleTextGreen >Atendemos fim de semana</ScheduleTextGreen>
-          </ScheduleItemGreen>
+
+          {Orphanage.open_on_weekends ? (
+
+            <ScheduleItemGreen>
+              <Feather name="info" size={40} color="#39CC83" />
+              <ScheduleTextGreen >Atendemos fim de semana</ScheduleTextGreen>
+            </ScheduleItemGreen>
+
+          ) : (
+
+              <ScheduleItemRed>
+                <Feather name="info" size={40} color="#FF669D" />
+                <ScheduleTextRed >Não atendemos fim de semana</ScheduleTextRed>
+              </ScheduleItemRed>
+
+            )}
+
+
         </ScheduleContainer>
 
-        <ContactButton onPress={() => { }}>
+        {/* <ContactButton onPress={() => { }}>
           <FontAwesome name="whatsapp" size={24} color="#FFF" />
           <ContactButtonText>Entrar em contato</ContactButtonText>
-        </ContactButton>
+        </ContactButton> */}
       </DetailsContainer>
     </Container>
   );

@@ -26,6 +26,6 @@ export const NextButton = styled.TouchableOpacity`
 
 export const NextButtonText = styled.Text`
   font-family: nunito800;
-  font-size: 16;
+  font-size: 16px;
   color: #FFF;
 `;

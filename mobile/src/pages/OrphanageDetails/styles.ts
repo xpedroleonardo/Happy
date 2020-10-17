@@ -52,7 +52,7 @@ export const MapStyle = {
   height: 150,
 };
 
-export const RoutesContainer = styled.View`
+export const RoutesButton = styled.TouchableOpacity`
   padding: 16px;
   align-items: center;
   justify-content: center;
@@ -102,6 +102,13 @@ export const ScheduleItemGreen = styled.View`
   border-radius: 20px;
 `;
 
+export const ScheduleItemRed = styled.View`
+  ${ScheduleItem};
+  background-color: #FEF6F9;
+  border: 1px #FFBCD4;
+  border-radius: 20px;
+`;
+
 export const ScheduleTextBlue = styled.Text`
   ${ScheduleText};
   color: #5C8599;
@@ -110,6 +117,11 @@ export const ScheduleTextBlue = styled.Text`
 export const ScheduleTextGreen = styled.Text`
   ${ScheduleText};
   color: #37C77F;
+`;
+
+export const ScheduleTextRed = styled.Text`
+  ${ScheduleText};
+  color: #FF669D;
 `;
 
 
@@ -128,4 +140,17 @@ export const ContactButtonText = styled.Text`
   color: #FFF;
   font-size: 16px;
   margin-left: 16px;
+`;
+
+
+export const Loading = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const LoadingText = styled.Text`
+  font-family: nunito800;
+  font-size: 16px;
+  color: #000;
 `;
